@@ -6,19 +6,28 @@ use std::{
     time::Duration,
 };
 
+use hello::ThreadPool;
+
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878");
     if let Err(e) = &listener {
         eprintln!("Server creation failed: {}", e);
     }
     let listener = listener.unwrap();
+    let pool = if 4 > 0 {
+            Ok(ThreadPool)
+        } else {
+            Err(PoolCreationError)
+        }.unwrap();
 
     for stream in listener.incoming() {
         if let Err(e) = &stream {
             eprintln!("Connection failed: {}", e);
         }
         let stream = stream.unwrap();
-        handle_connection(stream);
+        pool.execute(
+            || handle_connection(stream)            
+        );
     }
 }
 
