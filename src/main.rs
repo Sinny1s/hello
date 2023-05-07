@@ -14,11 +14,7 @@ fn main() {
         eprintln!("Server creation failed: {}", e);
     }
     let listener = listener.unwrap();
-    let pool = if 4 > 0 {
-            Ok(ThreadPool)
-        } else {
-            Err(PoolCreationError)
-        }.unwrap();
+    let pool = ThreadPool::build(4).unwrap();
 
     for stream in listener.incoming() {
         if let Err(e) = &stream {
